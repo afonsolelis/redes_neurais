@@ -1,0 +1,347 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+]{article}
+\usepackage{amsmath,amssymb}
+\usepackage{lmodern}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math}
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\usepackage[margin=1in]{geometry}
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.77,0.63,0.00}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\usepackage{graphicx}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+% Set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\ifLuaTeX
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same} % disable monospaced font for URLs
+\hypersetup{
+  pdftitle={Trabalho RNA Continuo},
+  pdfauthor={AfonsoBrandao},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+
+\title{Trabalho RNA Continuo}
+\author{AfonsoBrandao}
+\date{2023-03-07}
+
+\begin{document}
+\maketitle
+
+\hypertarget{primeira-questuxe3o}{%
+\subsection{Primeira questão}\label{primeira-questuxe3o}}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi})}
+\tightlist
+\item
+  Aumente o número máximo de épocas (por exemplo, para 300) e apresente
+  o gráfico de erro por época, como também o gráfico de sobreposição de
+  saídas (desejada e estimada). Faça uma análise se há melhoras em
+  relação aos valores anteriormente apresentados. Verifique o valor
+  final de erro e veja se ele consegue chegar a 0 (zero).
+\end{enumerate}
+
+\begin{itemize}
+\tightlist
+\item
+  Regressão modelo
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Definindo o tamanho do vetor}
+\NormalTok{N}\OtherTok{\textless{}{-}}\DecValTok{10}
+
+\CommentTok{\# Criando o vetor X com valores de 1 a N}
+\NormalTok{X}\OtherTok{\textless{}{-}}\FunctionTok{seq}\NormalTok{(}\DecValTok{1}\NormalTok{,N)}
+
+\CommentTok{\# Criando o vetor Y com a função 2X + 3}
+\NormalTok{Y}\OtherTok{\textless{}{-}}\DecValTok{2}\SpecialCharTok{*}\NormalTok{X}\SpecialCharTok{+}\DecValTok{3}
+
+\CommentTok{\# Plotando os valores de X e Y em um gráfico de pontos}
+\FunctionTok{plot}\NormalTok{(X,Y,}\AttributeTok{type=}\StringTok{"o"}\NormalTok{,}\AttributeTok{xlim=}\FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{10}\NormalTok{),}\AttributeTok{ylim=}\FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{,}\DecValTok{25}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{trabalho_rna_continuo_files/figure-latex/unnamed-chunk-1-1.pdf}
+- Ajustes
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Normalizando os vetores entre 0 e 1 e transpondo}
+\NormalTok{X}\OtherTok{\textless{}{-}}\NormalTok{X}\SpecialCharTok{/}\FunctionTok{max}\NormalTok{(X)}
+\NormalTok{Y}\OtherTok{\textless{}{-}}\NormalTok{Y}\SpecialCharTok{/}\FunctionTok{max}\NormalTok{(Y)}
+\NormalTok{X}\OtherTok{\textless{}{-}}\FunctionTok{t}\NormalTok{(}\FunctionTok{t}\NormalTok{(X))}
+
+\CommentTok{\# Adicionando um vetor de bias à matriz X}
+\NormalTok{bias}\OtherTok{\textless{}{-}}\DecValTok{1}
+\NormalTok{X}\OtherTok{\textless{}{-}}\FunctionTok{cbind}\NormalTok{(X,bias)}
+
+\CommentTok{\# Imprimindo as matrizes X e Y}
+\FunctionTok{print}\NormalTok{(X)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##           bias
+##  [1,] 0.1    1
+##  [2,] 0.2    1
+##  [3,] 0.3    1
+##  [4,] 0.4    1
+##  [5,] 0.5    1
+##  [6,] 0.6    1
+##  [7,] 0.7    1
+##  [8,] 0.8    1
+##  [9,] 0.9    1
+## [10,] 1.0    1
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{print}\NormalTok{(}\FunctionTok{cbind}\NormalTok{(Y))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##               Y
+##  [1,] 0.2173913
+##  [2,] 0.3043478
+##  [3,] 0.3913043
+##  [4,] 0.4782609
+##  [5,] 0.5652174
+##  [6,] 0.6521739
+##  [7,] 0.7391304
+##  [8,] 0.8260870
+##  [9,] 0.9130435
+## [10,] 1.0000000
+\end{verbatim}
+
+\begin{itemize}
+\tightlist
+\item
+  Definindo variáveis e treinando
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Definindo o número máximo de épocas e a taxa de aprendizado}
+\NormalTok{epoca\_max}\OtherTok{\textless{}{-}}\DecValTok{300}
+\NormalTok{eta}\OtherTok{\textless{}{-}}\FloatTok{0.01}
+
+\CommentTok{\# Inicializando o vetor de pesos W}
+\NormalTok{W}\OtherTok{\textless{}{-}}\FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{,}\DecValTok{1}\NormalTok{)}
+
+\CommentTok{\# Inicializando vetores para armazenar os erros das iterações e das épocas}
+\NormalTok{err\_iter}\OtherTok{\textless{}{-}}\FunctionTok{rep}\NormalTok{(}\DecValTok{0}\NormalTok{,N)}
+\NormalTok{err\_epoc}\OtherTok{\textless{}{-}}\FunctionTok{rep}\NormalTok{(}\DecValTok{0}\NormalTok{,epoca\_max)}
+
+\CommentTok{\# Iniciando o loop de treinamento}
+\ControlFlowTok{for}\NormalTok{ (epoca }\ControlFlowTok{in} \DecValTok{1}\SpecialCharTok{:}\NormalTok{epoca\_max) \{}
+  \ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in} \DecValTok{1}\SpecialCharTok{:}\NormalTok{N) \{}
+    \CommentTok{\# Calculando a saída estimada para a entrada atual}
+\NormalTok{    v }\OtherTok{\textless{}{-}} \FunctionTok{sum}\NormalTok{(X[i,]}\SpecialCharTok{*}\NormalTok{W)}
+    \CommentTok{\# Calculando o erro entre a saída desejada e a saída estimada}
+\NormalTok{    erro }\OtherTok{\textless{}{-}}\NormalTok{ Y[i] }\SpecialCharTok{{-}}\NormalTok{ v}
+    \CommentTok{\# Calculando o delta para atualizar os pesos}
+\NormalTok{    delta }\OtherTok{\textless{}{-}}\NormalTok{ eta}\SpecialCharTok{*}\NormalTok{erro}\SpecialCharTok{*}\NormalTok{X[i,]}
+    \CommentTok{\# Atualizando os pesos}
+\NormalTok{    W }\OtherTok{\textless{}{-}}\NormalTok{ W }\SpecialCharTok{+}\NormalTok{ delta}
+    \CommentTok{\# Armazenando o erro da iteração atual}
+\NormalTok{    err\_iter[i] }\OtherTok{\textless{}{-}} \FloatTok{0.5}\SpecialCharTok{*}\NormalTok{(erro}\SpecialCharTok{\^{}}\DecValTok{2}\NormalTok{)}
+\NormalTok{  \}}
+  \CommentTok{\# Armazenando o erro da época atual}
+\NormalTok{  err\_epoc[epoca] }\OtherTok{\textless{}{-}} \FunctionTok{sum}\NormalTok{(err\_iter)}
+\NormalTok{\}}
+
+\CommentTok{\# Plotando o erro quadrático médio ao longo das épocas}
+\FunctionTok{plot}\NormalTok{(err\_epoc, }\AttributeTok{type =} \StringTok{"line"}\NormalTok{, }\AttributeTok{xlab =} \StringTok{"época"}\NormalTok{, }\AttributeTok{ylab =} \StringTok{"erro quadrático médio"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning in plot.xy(xy, type, ...): plot type 'line' will be truncated to first
+## character
+\end{verbatim}
+
+\includegraphics{trabalho_rna_continuo_files/figure-latex/unnamed-chunk-3-1.pdf}
+- Pesos finais
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{print}\NormalTok{(W)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##                bias 
+## 0.7146150 0.2231222
+\end{verbatim}
+
+\begin{itemize}
+\tightlist
+\item
+  Calculando a saída estimada para todas as entradas e Plotando as
+  saídas desejadas e estimadas em um gráfico
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{Y\_estimado}\OtherTok{\textless{}{-}}\NormalTok{X[,}\DecValTok{1}\NormalTok{]}\SpecialCharTok{*}\NormalTok{W[}\DecValTok{1}\NormalTok{]}\SpecialCharTok{+}\NormalTok{W[}\DecValTok{2}\NormalTok{]}
+
+\FunctionTok{plot}\NormalTok{(X[,}\DecValTok{1}\NormalTok{],Y,}\AttributeTok{type =}\StringTok{"n"}\NormalTok{)}
+\FunctionTok{points}\NormalTok{(X[,}\DecValTok{1}\NormalTok{],Y,}\AttributeTok{pch=}\DecValTok{1}\NormalTok{,}\AttributeTok{type=}\StringTok{"o"}\NormalTok{,}\AttributeTok{col=}\StringTok{"1"}\NormalTok{)}
+\FunctionTok{points}\NormalTok{(X[,}\DecValTok{1}\NormalTok{],Y\_estimado,}\AttributeTok{pch=}\DecValTok{16}\NormalTok{,}\AttributeTok{type=}\StringTok{"p"}\NormalTok{,}\AttributeTok{col=}\StringTok{"2"}\NormalTok{)}
+\FunctionTok{legend}\NormalTok{(}\FloatTok{0.1}\NormalTok{,}\FloatTok{0.9}\NormalTok{,}\AttributeTok{legend=}\FunctionTok{c}\NormalTok{(}\StringTok{"Y\_desejado"}\NormalTok{,}\StringTok{"Y\_estimado"}\NormalTok{),}\AttributeTok{col=}\FunctionTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{,}\DecValTok{2}\NormalTok{),}\AttributeTok{pch=}\FunctionTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{,}\DecValTok{16}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{trabalho_rna_continuo_files/figure-latex/unnamed-chunk-5-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{print}\NormalTok{(}\FunctionTok{paste}\NormalTok{(}\StringTok{"Erro final do treinamento"}\NormalTok{, err\_epoc[epoca\_max]))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "Erro final do treinamento 0.0103700261799258"
+\end{verbatim}
+
+\hypertarget{resposta}{%
+\subsubsection{Resposta}\label{resposta}}
+
+Considerando o contexto abordado, foi possível observar um resultado
+significativo ao aumentar o número máximo de épocas para 300 no
+treinamento da rede neural. A partir do gráfico de erro por época,
+verificou-se que o erro inicialmente elevado apresentou uma rápida
+redução nas primeiras iterações, mas, posteriormente, a redução foi
+gradual, culminando em uma estabilização em torno de 0,103. Esse
+comportamento sugere que a rede neural está sendo capaz de aprender a
+relação entre as entradas e as saídas, porém ainda é possível considerar
+melhorias no processo.
+
+Com relação ao gráfico de sobreposição de saídas, foi possível constatar
+que as saídas estimadas apresentaram uma boa aproximação em relação às
+saídas desejadas, com discrepâncias mínimas entre elas. Esse resultado
+evidencia que a rede neural está realizando uma aproximação satisfatória
+da função que gera as saídas, contribuindo para aprimoramentos futuros
+no processo de treinamento.
+
+\hypertarget{segunda-questuxe3o}{%
+\subsection{Segunda Questão}\label{segunda-questuxe3o}}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi})}
+\setcounter{enumi}{1}
+\tightlist
+\item
+  Agora, com este novo valor de época, altere o valor do eta para, por
+  exemplo, 0.1. Análise o gráfico de erro e verifique se o ponto de
+  diminuição abrupta (ponto em que faz o formato de ``cotovelo'' do
+  gráfico) é anterior ou posterior ao do experimento anterior. Depois,
+  refaça as tarefas pedidas no exercício 1 e compare os desempenhos. Por
+  fim, conclua em que implica a alteração deste parâmetro e faça uma
+  interpretação do que se espera acontecer se o valor deste parâmetro
+  por aumentado (tendendo a 1).
+\end{enumerate}
+
+\begin{itemize}
+\tightlist
+\item
+  Segue código condensado mudando a eta\textless- 0.01
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{print}\NormalTok{(}\FunctionTok{paste}\NormalTok{(}\StringTok{"Erro final do treinamento"}\NormalTok{, err\_epoc[epoca\_max]))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "Erro final do treinamento 0.0103700261799258"
+\end{verbatim}
+
+\end{document}
