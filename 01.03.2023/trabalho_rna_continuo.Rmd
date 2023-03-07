@@ -112,6 +112,58 @@ Com relação ao gráfico de sobreposição de saídas, foi possível constatar 
 
 - Segue código condensado mudando a eta<- 0.01
 ```{r}
+N<-10
+X<-seq(1,N)
+Y<-2*X+3
+plot(X,Y,type="o",xlim=c(0, 10),ylim=c(0,25))
+```
+
+```{r}
+X<-X/max(X)
+Y<-Y/max(Y)
+X<-t(t(X))
+bias<-1
+X<-cbind(X,bias)
+print(X)
+print(cbind(Y))
+```
+```{r}
+epoca_max<-300
+eta<-0.1
+W<-c(0,1)
+err_iter<-rep(0,N)
+err_epoc<-rep(0,epoca_max)
+
+for (epoca in 1:epoca_max) {
+  for (i in 1:N) {
+    v <- sum(X[i,]*W)
+    erro <- Y[i] - v
+    delta <- eta*erro*X[i,]
+    W <- W + delta
+    err_iter[i] <- 0.5*(erro^2)
+  }
+  err_epoc[epoca] <- sum(err_iter)
+}
+plot(err_epoc, type = "line", xlab = "época", ylab = "erro quadrático médio")
+```
+
+```{r}
+print(W)
+
+Y_estimado<-X[,1]*W[1]+W[2]
+
+plot(X[,1],Y,type ="n")
+points(X[,1],Y,pch=1,type="o",col="1")
+points(X[,1],Y_estimado,pch=16,type="p",col="2")
+legend(0.1,0.9,legend=c("Y_desejado","Y_estimado"),col=c(1,2),pch=c(1,16))
+
 print(paste("Erro final do treinamento", err_epoc[epoca_max]))
 ```
 
+### Resposta
+
+Com o valor de eta alterado para 0.1 e mantendo o número máximo de épocas em 300, foi possível observar no gráfico de erro por época que o ponto de diminuição abrupta ocorreu em torno da época 20, ou seja, posterior ao experimento anterior com eta de 0.01.
+
+Ao refazer as tarefas pedidas no exercício 1, verificou-se que a rede neural apresentou um desempenho melhor em relação ao experimento anterior, tendo alcançado um valor final de erro próximo de zero e uma aproximação mais precisa entre as saídas desejadas e estimadas.
+
+A alteração do valor do parâmetro eta afeta diretamente a taxa de aprendizado da rede neural. Quando esse valor é aumentado, a rede pode aprender mais rápido, mas também pode ocorrer o risco de que ela fique presa em mínimos locais do erro e, portanto, não consiga aprender de forma mais precisa. Isso pode afetar o desempenho geral da rede neural.
