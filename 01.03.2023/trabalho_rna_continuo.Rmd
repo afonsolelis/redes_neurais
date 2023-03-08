@@ -2,7 +2,9 @@
 title: "Trabalho RNA Continuo"
 author: "AfonsoBrandao"
 date: "2023-03-07"
-output: pdf_document
+output:
+  html_document:
+    df_print: paged
 ---
 <style>
   .exerc-legend{

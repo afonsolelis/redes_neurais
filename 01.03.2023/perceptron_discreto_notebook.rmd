@@ -254,7 +254,7 @@ x2<-dataset[,2]/max(dataset[,2])
 Portanto, pede-se:
 
  a) Escolher os melhores parâmetros para o treinamento da rede;
- b) Apresentar os resultados finas de ajustes de parâmetros do treinamento da rede;
+ b) Apresentar os resultados finais de ajustes de parâmetros do treinamento da rede;
  c) Apresentação dos resultados de forma geométrica (visualização dos dados com a fronteira de separação sobreposta).
  d) Refaça todos os itens acima (a-c) agora, considerando, apenas as classes versicolor e virginica.  
  
