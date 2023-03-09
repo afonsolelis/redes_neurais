@@ -3,9 +3,9 @@ title: "Trabalho RNA da Aula 2 - 01.03.2023"
 author: "Afonso Cesar Lelis Brandão - matrícula e e-mail: 72307390@mackenzista.com.br"
 date: "2023-03-07"
 output:
-  pdf_document: default
   html_document:
     df_print: paged
+  pdf_document: default
   word_document: default
 ---
 # Primeira Parte
