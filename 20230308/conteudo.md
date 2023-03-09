@@ -18,3 +18,5 @@
 - Pesquisar mais sobre F-Score;
 - Pesquisar mais sobre G-means;
 - Tamém sobre a curva ROC;
+- Quando a medida é contínua, nada acima funciona, tem que ir para erro absoluto - erro quadrado médio - erro médio absoluto, e outras;
+
