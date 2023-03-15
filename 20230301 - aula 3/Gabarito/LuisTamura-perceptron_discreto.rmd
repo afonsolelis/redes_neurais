@@ -1,0 +1,533 @@
+---
+title: "Percepetron de Camada Simples para saídas discretas"
+author: "Prof. Leandro Augusto"
+output: html_document
+---
+
+
+## Problema da porta lógica AND
+
+É muito comum encontrar em problemas que envolvem RNA utilizar em um primeiro experimento as portas lógicas. Isso deve-se a origem das pesquisas neste tipo de assunto, onde se tinha como pretenção a substituição dos dispositivos eletrônicos portas lógicas por neurônios artificiais, de maneira a tornar os computadores inteligentes.
+
+No entanto, este estudo não teve evolução neste sentido e ficou o uso de portas lógicas como uma referência para mostrar que uma implememetação de RNA funciona de maneira adequada, ou seja, aprende.
+
+No problema a seguir, utilizaremos a porta lógica AND (ou E). Trata-se de um problema com 4 exemplares (objetos ou registros) caracteizados por dois atributos descritivos (variáveis) e um atributo classificatório (saída desejada), sendo todos atributos binários.
+
+Esta base tem como característica que a saída desejada só será 1 quando os dois atributos descritivos forem também 1.
+
+A seguir serão apresentados mais detalhes sobre o dataset.
+
+### Leitura e análises exploratória do dataset
+
+Como em todo processo de Mineração de Dados, a primeira etapa do processo é sempre a carga de um dataset.
+
+Para este caso de exemplo com o Perceptron, o dataset a ser usado será a porta lógica AND (E), como dito antes, cuja construção será apresentada a seguir. É importante destacar que em cada exemplar foi adicionado um valor constante, 1, referente ao bias (discutido em aula).
+
+```{r}
+x1<-c(0,0,1)
+x2<-c(0,1,1)
+x3<-c(1,0,1)
+x4<-c(1,1,1)
+
+X<-rbind(x1,x2,x3,x4)
+print(X)
+```
+
+Como mencionado antes, a saída desejada deste dataset só será 1, quando os atributos descritivos (exceto o bias) também for 1. Portanto, a saída desejada deste conjunto é definida como:
+
+```{r}
+Y<-c(0,0,0,1)
+print(Y)
+```
+
+Visualizando o dataset para o entendimento de algumas caracerísticas dos dados:
+
+```{r}
+plot(X,type="n")
+points(x1[1],x1[2],pch=c(19),cex=2,col="2")
+points(x2[1],x2[2],pch=c(19),cex=2,col="2")
+points(x3[1],x3[2],pch=c(19),cex=2,col="2")
+points(x4[1],x4[2],pch=c(15),cex=2,col="1")
+legend(0.4,0.6,legend=c("0","1"),col=c(2,1), pch=c(19,15))
+```
+
+### Parametrização da Rede
+
+Para esa rede neural é preciso inicializar os valores dos pesos e definir um valor para a taxa de aprendizagem. Os pesos serão inicializados com valor 0, exceto para o bias.
+
+```{r}
+W<-c(0,0,1)
+```
+
+O valor de eta será ajustado como sendo 0.1:
+
+```{r}
+eta<-0.1
+```
+
+Por fim, precisa ser definido o número máximo épocas como critério de parada:
+
+```{r}
+epoca_max<-20
+```
+
+Apenas como forma de monitorar o treinamento da rede, mais especificamente o erro de aprendizagem, durante o treinamento será monitorado o erro a cada iteração (apresentação de entrada do conjunto de treinamento) e, por isso, criaremos uma variável para armazenar essa medida:
+
+```{r}
+erro_ite<-rep(0,dim(X)[1])
+print(erro_ite)
+```
+
+E outra variável para guardar o erro total por época de aprendizagem (uma rodada completa de todo conjunto de treinamento):
+
+```{r}
+erro_total<-rep(0,epoca_max)
+```
+
+
+### Treinamento da Rede
+
+Agora, finalmente, reliza-se o treinamento do neurônio
+
+```{r}
+for(epoca in 1:epoca_max){
+  for(i in 1:dim(X)[1]) {
+   v<-sum(X[i,]*W)
+   if(v>0){
+     y_calc<-1
+   }else{
+     y_calc<-0
+   }
+   erro<-Y[i]-y_calc
+   delta<-(eta*erro*X[i,])
+   W<-W+delta
+   erro_ite[i]<-erro^2
+  }
+  erro_total[epoca]<-sum(erro_ite)
+  if(sum(erro_ite)==0){
+   break
+  }
+}
+```
+
+### Análise do desempenho da rede
+
+É interessante, em nível de informação, saber o resultado de alguns parâmetros do treinamento da rede, por exemplo:
+
+o número de épocas efetivamente usado no treinamento:
+
+```{r}
+print(paste("Número de épocas usadas no treinamento",epoca,"de um máximo de",epoca_max))
+```
+
+O valor final do peso sináptico:
+
+```{r}
+print(W)
+```
+
+E o erro total da rede:
+
+```{r}
+print(erro_total)
+```
+ou de forma gráfica
+
+```{r}
+plot(erro_total,type="l")
+```
+
+Para este primeiro caso, a análise do desempenho da rede será feita de forma geométrica com o objetivo de verificar o resultados final do treinamento.
+
+Os valores finais (após treinamento) do peso indica os parâmetros do hiperplano de separação entre as classes do conjunto de dados. 
+
+```{r}
+print(W)
+```
+
+Que traduzidos graficamente, teremos então o conjunto de treinamento e os pesos sinápticos traduzidos em hiperplano de separação.
+
+```{r}
+plot(X,type="n",xlim=c(-1.5,1.5 ), ylim=c(-1.5,1.5))
+points(x1[1],x1[2],pch=c(19),cex=2,col="2")
+points(x2[1],x2[2],pch=c(19),cex=2,col="2")
+points(x3[1],x3[2],pch=c(19),cex=2,col="2")
+points(x4[1],x4[2],pch=c(15),cex=2,col="1")
+legend(0.4,0.6,legend=c("0","1"),col=c(2,1), pch=c(19,15))
+
+x_1<- -(W[3]/W[1])
+
+x_2<- -(W[3]/W[2])
+
+segments(x_1,0,0,x_2)
+
+```
+
+O resultado esperado para o gráfico acima é ter, além do conjunto de treinamento, um segmento de reta, representando um hiperplano de separação. Este hiperplano deve separar o conjunto de treinamento em suas classes. Caso o hiperplano não separe as classes corretamente, dizemos que há um erro de classificação. Contudo, a visualização permite apenas uma interpretação qualitativa e limita-se a conjunto de dados com até 3 atributos (variáveis), o que não é comum em casos reais. Portanto, a seguir é proposto um novo desafio ainda com análise de desempenho qualitativo e, nas próximas atividades será abordado a análise quantitativa do desempenho da Rede Neural.
+
+#Exercício 1
+Para o experimento apresentado anteriormente, faça as alterações de valores dos seguintes parâmetros e avalie os resultados de época e hiperplano de separação:
+
+a) Altere os valores de pesos iniciais para W<-c(0.1,0.1,1)
+
+```{r}
+W<-c(0.1,0.1,1)
+eta<-0.1
+epoca_max<-20
+erro_ite<-rep(0,dim(X)[1])
+erro_total<-rep(0,epoca_max)
+
+for(epoca in 1:epoca_max){
+  for(i in 1:dim(X)[1]) {
+   v<-sum(X[i,]*W)
+   if(v>0){
+     y_calc<-1
+   }else{
+     y_calc<-0
+   }
+   erro<-Y[i]-y_calc
+   delta<-(eta*erro*X[i,])
+   W<-W+delta
+   erro_ite[i]<-erro^2
+  }
+  erro_total[epoca]<-sum(erro_ite)
+  if(sum(erro_ite)==0){
+   break
+  }
+}
+
+```
+
+#Comentário do aluno: Comparado com o peso anterior, temos a diminuição de 1 época para que o algoritmo aprenda, além disso o erro total variou também.
+```{r}
+print(paste("Número de épocas usadas no treinamento",epoca,"de um máximo de",epoca_max))
+print(W)
+print(erro_total)
+```
+
+```{r}
+plot(erro_total,type="l")
+```
+
+#Comentário do aluno: Com a alteração do peso o hiperplano visualmente não parece ter tido diferença.
+```{r}
+plot(X,type="n",xlim=c(-1.5,1.5 ), ylim=c(-1.5,1.5))
+points(x1[1],x1[2],pch=c(19),cex=2,col="2")
+points(x2[1],x2[2],pch=c(19),cex=2,col="2")
+points(x3[1],x3[2],pch=c(19),cex=2,col="2")
+points(x4[1],x4[2],pch=c(15),cex=2,col="1")
+legend(0.4,0.6,legend=c("0","1"),col=c(2,1), pch=c(19,15))
+
+x_1<- -(W[3]/W[1])
+
+x_2<- -(W[3]/W[2])
+
+segments(x_1,0,0,x_2)
+
+```
+
+
+b) Com os valores de pesos iniciais do primeiro experimento (apresentado anteriormente durante a aula), diminua o valor da taxa de aprendizagem eta para:
+
+```{r}
+eta<-0.01
+```
+
+```{r}
+W<-c(0,0,1)
+epoca_max<-20
+erro_ite<-rep(0,dim(X)[1])
+erro_total<-rep(0,epoca_max)
+
+for(epoca in 1:epoca_max){
+  for(i in 1:dim(X)[1]) {
+   v<-sum(X[i,]*W)
+   if(v>0){
+     y_calc<-1
+   }else{
+     y_calc<-0
+   }
+   erro<-Y[i]-y_calc
+   delta<-(eta*erro*X[i,])
+   W<-W+delta
+   erro_ite[i]<-erro^2
+  }
+  erro_total[epoca]<-sum(erro_ite)
+  if(sum(erro_ite)==0){
+   break
+  }
+}
+
+```
+
+
+#Comentário do aluno: Com uma taxa de aprendizagem menor o algoritmo utilizou todas as suas épocas para tentar aprender, porém os pesos tornaram-se negativos, sendo o bias o único com peso positivo.
+```{r}
+print(paste("Número de épocas usadas no treinamento",epoca,"de um máximo de",epoca_max))
+print(W)
+print(erro_total)
+```
+
+#Comentário do aluno: O gráfico mostra que o erro total manteve-se até sua última época onde aumentou em 1 a quantidade de erros, enquanto o algoritmo com uma taxa de aprendizagem maior conseguiu mitigar o número de erros em uma quantidade de épocas menor.
+```{r}
+plot(erro_total,type="l")
+```
+
+#Comentário do aluno: Por conta da taxa de aprendizagem o algoritmo não foi capaz de aprender, portanto temos um erro de separação no hiperplano. 
+```{r}
+plot(X,type="n",xlim=c(-1.5,1.5 ), ylim=c(-1.5,1.5))
+points(x1[1],x1[2],pch=c(19),cex=2,col="2")
+points(x2[1],x2[2],pch=c(19),cex=2,col="2")
+points(x3[1],x3[2],pch=c(19),cex=2,col="2")
+points(x4[1],x4[2],pch=c(15),cex=2,col="1")
+legend(0.4,0.6,legend=c("0","1"),col=c(2,1), pch=c(19,15))
+
+x_1<- -(W[3]/W[1])
+
+x_2<- -(W[3]/W[2])
+
+segments(x_1,0,0,x_2)
+
+```
+
+
+c) Com o valor do eta reduzido, altere o valor do peso conforme sugestão abaixo e verifique os medidores de desempenho:
+
+```{r}
+W<-c(0.1,0,1)
+```
+
+```{r}
+eta<-0.01
+epoca_max<-20
+erro_ite<-rep(0,dim(X)[1])
+erro_total<-rep(0,epoca_max)
+
+for(epoca in 1:epoca_max){
+  for(i in 1:dim(X)[1]) {
+   v<-sum(X[i,]*W)
+   if(v>0){
+     y_calc<-1
+   }else{
+     y_calc<-0
+   }
+   erro<-Y[i]-y_calc
+   delta<-(eta*erro*X[i,])
+   W<-W+delta
+   erro_ite[i]<-erro^2
+  }
+  erro_total[epoca]<-sum(erro_ite)
+  if(sum(erro_ite)==0){
+   break
+  }
+}
+
+```
+
+#Comentário do aluno: O algoritmo novamente não conseguiu aprender, porém em sua última época não houve um aumento no número de erros comparado com o anterior. Os pesos variaram, porém como o anterior somente o peso do bias é positivo.
+```{r}
+print(paste("Número de épocas usadas no treinamento",epoca,"de um máximo de",epoca_max))
+print(W)
+print(erro_total)
+```
+
+#Comentário do aluno: Devido a última época não ter tido um aumento de erros, o gráfico segue o formato de uma linha.
+```{r}
+plot(erro_total,type="l")
+```
+
+#Comentário do aluno: Houve um erro de classificação novamente, porém ao compararmos com o gráfico do exercício anterior, a separação hiperbólica está mais longe do ponto desejado.
+```{r}
+plot(X,type="n",xlim=c(-1.5,1.5 ), ylim=c(-1.5,1.5))
+points(x1[1],x1[2],pch=c(19),cex=2,col="2")
+points(x2[1],x2[2],pch=c(19),cex=2,col="2")
+points(x3[1],x3[2],pch=c(19),cex=2,col="2")
+points(x4[1],x4[2],pch=c(15),cex=2,col="1")
+legend(0.4,0.6,legend=c("0","1"),col=c(2,1), pch=c(19,15))
+
+x_1<- -(W[3]/W[1])
+
+x_2<- -(W[3]/W[2])
+
+segments(x_1,0,0,x_2)
+```
+#Exercício 2 
+O dataset Iris trata-se de uma base onde através das medidas sob as sépalas e pétalas da planta Iris seja capaz de construir uma modelagem preditiva capaz de reconhecer automaticamente as espécies da planta em: Setosa, Versicolor ou Virginica.
+ 
+Para este case, simplificaremos o problema estudando apenas duas espécies da planta, Setosa e Virginica. E também, deve-se utilizar aqui apenas as medidas de sépalas (sepal).
+ 
+Dica, como o dataset está disponível no R, a carga é feita simplesmeste com o comando:
+ 
+```{r}
+data("iris")
+head(iris)
+```
+
+ A separação e visualização do dataset a ser utilizado no experimento (Sepal.Lenght, Sepa.Width, Species={setosa e virginica}) são apresentados a seguir:
+ 
+```{r}
+dataset<-iris[which(iris$Species!="versicolor"),][1:2-3]
+head(dataset)
+```
+ 
+ 
+ 
+```{r}
+plot(dataset$Petal.Length,dataset$Petal.Width,pch=c(16,19),col=dataset$Species)
+legend(5.5,1,legend=c("setosa","virginica"),col=c(1,3),pch=c(16,19))
+```
+
+Importante notar que, a rede neural só trabalha com valores numéricos. O atributo classificatório do dataset Iris, Espécie, é do tipo categórico. Portanto, será necessário realizar a transformação no atributo para numérico e binário (0 e 1). Uma sugestão de transformação pode ser feita como segue usando a função mapvalues do pacote plyr:
+
+```{r}
+library("plyr")
+classes<-as.numeric(dataset$Species)
+classes_bin<-mapvalues(classes,from=c(1,3),to=c(0,1))
+print((classes_bin))
+```
+
+ Como dica final, sugere-se que normalize os valores dos atributos (variáveis)
+ 
+ x1 = petal length
+ x2 = Petal width
+```{r}
+x1<-dataset[,1]/max(dataset[,1])
+x2<-dataset[,2]/max(dataset[,2])
+bias<-rep.int(1, dim(dataset)[1])
+```
+
+Portanto, pede-se:
+
+ a) Escolher os melhores parâmetros para o treinamento da rede;
+
+```{r}
+W<-c(0.5,0.5,1)
+eta<-0.9
+epoca_max<-3000
+
+erro_ite<-rep(0,dim(dataset)[1])
+erro_total<-rep(0,epoca_max)
+
+for(epoca in 1:epoca_max){
+  for(i in 1:dim(dataset)[1]){
+   v<-(x1[i]*W[1]) + (x2[i]*W[2]) + (bias[i]*W[3])
+   if(v>0){
+     y_calc<-1
+   }else{
+     y_calc<-0
+   }
+   erro<-classes_bin[i]-y_calc
+   delta<-(eta*erro*(x1[i]+x2[i]+bias[i]))
+   W<-W+delta
+   erro_ite[i]<-erro^2
+  }
+  erro_total[epoca]<-sum(erro_ite)
+  if(sum(erro_ite)==0){
+   break
+  }
+}
+print(W)
+
+```
+
+ b) Apresentar os resultados finas de ajustes de parâmetros do treinamento da rede;
+ 
+
+W<-c(0.5,0.5,1)
+eta<-0.9
+epoca_max<-3000
+
+```{r}
+print(paste("Número de épocas usadas no treinamento",epoca,"de um máximo de",epoca_max))
+print(W)
+print(erro_total)
+```
+
+ c) Apresentação dos resultados de forma geométrica (visualização dos dados com a fronteira de separação sobreposta).
+ 
+```{r}
+
+x_1<- (W[3]/W[1])
+x_2<- (W[3]/W[2])
+
+plot(x1,x2,pch=c(16,19),col=dataset$Species, xlab='Petal length', ylab='Petal width')
+legend(0.2,0.6,legend=c("setosa","virginica"),col=c(1,3),pch=c(16,19))
+segments(x_1,0,0,x_2)
+
+```
+ 
+ d) Refaça todos os itens acima (a-c) agora, considerando, apenas as classes versicolor e virginica.  
+ 
+#Item A
+```{r}
+dataset<-iris[which(iris$Species!="setosa"),][1:2-3]
+```
+
+```{r}
+library("plyr")
+classes<-as.numeric(dataset$Species)
+classes_bin<-mapvalues(classes,from=c(2,3),to=c(0,1))
+print((classes_bin))
+```
+
+```{r}
+x1<-dataset[,1]/max(dataset[,1])
+x2<-dataset[,2]/max(dataset[,2])
+bias<-rep.int(1, dim(dataset)[1])
+```
+
+
+```{r}
+W<-c(0.4,0.5,1)
+eta<-0.6
+epoca_max<-3000
+
+erro_ite<-rep(0,dim(dataset)[1])
+erro_total<-rep(0,epoca_max)
+
+for(epoca in 1:epoca_max){
+  for(i in 1:dim(dataset)[1]){
+   v<-(x1[i]*W[1]) + (x2[i]*W[2]) + (bias[i]*W[3])
+   if(v>0){
+     y_calc<-1
+   }else{
+     y_calc<-0
+   }
+   erro<-classes_bin[i]-y_calc
+   delta<-(eta*erro*(x1[i]+x2[i]+bias[i]))
+   W<-W+delta
+   erro_ite[i]<-erro^2
+  }
+  erro_total[epoca]<-sum(erro_ite)
+  if(sum(erro_ite)==0){
+   break
+  }
+}
+print(W)
+
+```
+#Item B
+W<-c(0.4,0.5,1)
+eta<-0.6
+epoca_max<-3000
+
+
+```{r}
+print(paste("Número de épocas usadas no treinamento",epoca,"de um máximo de",epoca_max))
+print(W)
+print(erro_total)
+```
+
+#Item C
+```{r}
+
+x_1<- (W[3]/W[1])
+print(x_1)
+x_2<- (W[3]/W[2])
+print(x_2)
+
+plot(x1,x2,pch=c(16,19),col=dataset$Species, xlab='Petal length', ylab='Petal width')
+legend(0.5,0.8,legend=c("versicolor","virginica"),col=c(2,3),pch=c(16,19))
+segments(x_1,0,0,x_2)
+
+```

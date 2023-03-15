@@ -1,0 +1,139 @@
+---
+title: "Percepetron de Camada Simples para saídas contínuas"
+author: "Prof. Leandro Augusto"
+output: html_document
+---
+  <style>
+    .exerc-legend{
+      background:#e6f5ff;border-top: 2px solid #006bb3;
+      }
+    .exerc{
+      background:#006bb3;color:#fff;padding:5px;
+    }
+    .enunciado{
+      background:#e6f5ff;margin:-10px 0px 0px 15px;padding:10px 0px 20px 0px;border-bottom: 2px solid #006bb3
+    }
+  </style>
+
+## Problema de regressão linear
+
+Um problema de regressão pode também ser definido como sendo um problema de predição, no entanto, com a saída alvo (target) sendo um valor numérico, na maioria dos casos, contínuo. 
+
+Exemplos típicos que usam técncias de regressão são em previsões de séries temporais. Ou seja, prever o valor futuro do número de clientes dado uma campanha de promoção, estimar o valor futuro de um indicador financeiro entre outros. 
+
+Portanto, formalmente a estimação de um valor y é dada em função de um valor x. Ou seja, y=f(x). Na estatística os algoritmos classicos aplicados neste domínio de problemas é a regressão linear e logística.
+
+Aqui será introduzido o conceito de Redes Neurais em problemas com valores de saída contínuo.
+
+Para manter o foco no algoritmo, mais especificamente em sua parametrização, o problema a ser tratado será muito simples. Verificar se o algoritmo aprende a seguinte equação de uma reta Y<-2*(X)+3 com um total de 10 exemplares (N). A seguir estão a geração do dataset e a plotagem da reta a ser aprendida:
+
+```{r}
+N<-10
+X<-seq(1:N)
+Y<-2*(X)+3
+plot(X,Y,type="o",xlim=c(0,10),ylim=c(0,25))
+```
+
+Aparentemente, esta atividade parece ser uma tarefa simples. No entanto, lembre-se que a rede neural tem que descobrir a equação da reta, sem ter essa informação, apenas os valores X e Y como um dataset.
+
+Em se tratando do dataset, os valores serão normalizados pelo valor máximo (max) para ficarem no domínio de 0 a 1. E, em termos do X, após normalização, será adicionado uma coluna para o Bias (constante e com valor unitário):
+
+```{r}
+X<-X/max(X)
+X<-t(t(X))
+bias<-1
+X<-cbind(X,bias)
+print(X)
+```
+
+O valor de Y (saída desejada), também será normalizado pelo máximo da variável:
+
+```{r}
+Y<-Y/max(Y)
+print(cbind(Y))
+```
+
+
+Agora que o dataset está pronto, é preciso estabelecer as parametrizações do algoritmo da Rede Neural que realizará o aprendizado da equação da reta.
+
+Estes valores são de extrema importância para o sucesso da aplicação dos algoritmos de RNA. Portanto, os valores aqui definidos deverão depois serem melhor ajustados em forma de exercício prático:
+
+```{r}
+epoca_max<-600
+eta<-0.01
+W<-c(0,1)
+```
+
+Para que sejam feitas análises futuras em relação a efetividade do treinamento, vamos monitorar o erro do treinamento da rede a cada iteação e época. Por isso, criaremos variáveis auxiliares para este suporte:
+
+```{r}
+err_iter <- rep(0,N)
+err_epoc <- rep(0,epoca_max)
+```
+
+Finalmente estabelece-se o algoritmo de aprendizado e o treinamento da rede acontece:
+
+```{r}
+for(epoca in 1:epoca_max){
+  for(i in 1:N) {
+    v<-sum(X[i,]*W)
+    erro<-Y[i]-v
+    delta<-(eta*erro*X[i,])
+    W<-W+delta
+    err_iter[i]<-0.5*(erro^2)
+  }
+  err_epoc[epoca]<-(sum(err_iter))
+}
+```
+
+Ao final do treinamento, deseja-se analisar o erro a cada época de treinamento e o valor final dos pesos sinápticos.
+
+```{r}
+plot(err_epoc,type="line",xlab = "época", ylab = "erro quadrático médio",)
+```
+
+
+O que se deve esperar deste gráfico é um decaimento do erro em relação à época assintoticamente a zero. Aqui ainda poderia se pensar em definir como um segundo cirtério de parada do treinamento da rede um erro máximo permitido, pois o treinamento dificilmente conseguirá reduzir o erro à zero. 
+
+Agora, deseja-se saber qual foi o peso sináptico da rede após o treinamento:
+
+```{r}
+print(W)
+```
+
+Estes valores de peso se equivalem respectivamente ao 2 e 3 da equação da reta (2*X + 3). No entanto, como houve normalização dos valores, a comparação não pode ser direta. Porém, uma maneira de analisar qualitativamente o treinamento da rede é fazendo uma plotagem sobreposta entre o gráfico X e Y apresentado no início do case e, agora, com o Y estimado (Y_estimado), usandos os valores de peso ajustados após o trenamento da rede.
+
+Sendo assim, primeiramente encontrando o Y estimado:
+
+```{r}
+Y_estimado = X[,1]*W[1]+W[2] 
+```
+
+E, finalmente, o gráfico sobreposto:
+
+```{r}
+plot(X[,1],Y,type="n")#,ylim=c(0.5, 1.2))
+points(X[,1],Y,pch=1,type="o",col="1")
+points(X[,1],Y_estimado,pch=16,type="p",col="2")
+legend(0.1,0.9,legend=c("Y_desejado","Y_estimado"),col=c(1,2), pch=c(1,16))
+```
+
+Note que, as escalas dos valores dos eixos não são os mesmos da primeira plotagem em razão da normalização dos dados. Contudo, o esperado de se encontrar aqui é os pontos vermelhos, Y estimado, se aproximarem do valor desejado, obviamente com um erro, que já foi calculado antes e é:
+
+```{r}
+print(paste("Erro final do treinamento",err_epoc[epoca_max]))
+```
+
+<div class="exerc-legend">
+<span class="exerc">Exercícios</span>
+</div>
+
+<div class="enunciado">
+
+1) Aumente o número máximo de épocas (por exemplo, para 300) e apresente o gráfico de erro por época, como também o gráfico de sobreposição de saídas (desejada e estimada). Faça uma análise se há melhoras em relação aos valores anteriormente apresentados. Verifique o valor final de erro e veja se ele consegue chegar a 0 (zero).
+
+2) Agora, com este novo valor de época, altere o valor do eta para, por exemplo, 0.1. Análise o gráfico de erro e verifique se o ponto de diminuição abrupta (ponto em que faz o formato de "cotovelo" do gráfico) é anterior ou posterior ao do experimento anterior. Depois, refaça as tarefas pedidas no exercício 1 e compare os desempenhos. Por fim, conclua em que implica a alteração deste parâmetro e faça uma interpretação do que se espera acontecer se o valor deste parâmetro por aumentado (tendendo a 1).
+
+3) Por fim, refaça os mesmos ensaios e análises da questão 2, agora alterando o valor inicial dos pesos sinápticos para W<-c(0.1,1).
+
+</div>
