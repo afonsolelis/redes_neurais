@@ -1,0 +1,161 @@
+---
+title: "Trabalho da Aula 5"
+author: "AfonsoBrandao"
+date: "2023-03-21"
+output:
+  html_document:
+    df_print: paged
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## MLP Contínuo
+
+Nesta versão, carregamos a base de dados iris usando a função data e, em seguida, normalizamos os dados usando a função normalizeData. Em seguida, usamos a função splitForCrossValidation para dividir os dados em k folds. Em seguida, loopamos através de cada fold, ajustamos o modelo com o conjunto de treinamento e fazemos previsões nos dados de teste. Armazenamos os resultados em uma matriz e calculamos a média dos resultados. Finalmente, imprimimos os resultados médios.
+
+```{r continuo}
+# Carregar pacote
+library(RSNNS)
+
+# Carregar base de dados Iris
+data(iris)
+
+# Separar os dados em input (X) e output (Y)
+X <- iris[,1:4]
+Y <- iris[,5]
+
+# Normalizar os dados
+X <- normalizeData(X, type = "0_1")
+
+# Combinar os dados em um único objeto
+data <- cbind(X, Y)
+colnames(data) <- c("Sepal.Length", "Sepal.Width", "Petal.Length", "Petal.Width", "Species")
+
+# Definir o número de folds
+k <- 5
+
+# Criar vetor de índices aleatórios
+index <- sample(1:k, nrow(data), replace = TRUE)
+
+# Vetores para armazenar as predições e valores reais
+predictions_train <- vector()
+predictions_test <- vector()
+targets_train <- vector()
+targets_test <- vector()
+
+# Loop para separar os dados em k grupos
+for(i in 1:k){
+  
+  # Selecionar os índices para o grupo atual
+  index_train <- index != i
+  index_test <- index == i
+  
+  # Separar os dados de treinamento e teste
+  train_data <- data[index_train, ]
+  test_data <- data[index_test, ]
+  
+  # Separar os dados de input e output
+  x_train <- train_data[, 1:4]
+  y_train <- train_data[, 5]
+  x_test <- test_data[, 1:4]
+  y_test <- test_data[, 5]
+  
+  # Treinar MLP nos dados de treinamento
+  model <- mlp(x_train, y_train,
+               size = c(2, 3),
+               learnFuncParams = c(0.9),
+               maxit = 100,
+               learnFunc = "Std_Backpropagation",
+               hiddenActFunc = "Act_Logistic",
+               inputsTest = x_test,
+               targetsTest = y_test,
+               linOut = TRUE
+  )
+  
+  # Fazer as predições nos dados de treinamento e teste
+  predictions_train_fold <- predict(model, as.data.frame(x_train))
+  predictions_test_fold <- predict(model, as.data.frame(x_test))
+  
+  # Armazenar as predições e valores reais para o fold atual
+  predictions_train <- c(predictions_train, predictions_train_fold)
+  predictions_test <- c(predictions_test, predictions_test_fold)
+  targets_train <- c(targets_train, y_train)
+  targets_test <- c(targets_test, y_test)
+  
+  # Plotar o erro iterativo para o fold atual
+  plotIterativeError(model, main = paste("Fold", i))
+}
+```
+
+## MLP Discreto
+
+Neste código, o conjunto de dados Iris é carregado e pré-processado da mesma forma que no código anterior. A validação cruzada k-fold com 5 pastas é realizada e os resultados são salvos em um dataframe que contém a acurácia, precisão e recall para cada espécie:
+
+```{r}
+# install.packages("RSNNS")
+library("RSNNS")
+library("plyr")
+
+dataset <- iris[which(iris$Species != "setosa"), ][1:2 - 3]
+head(dataset)
+
+plot(dataset[, 1], dataset[, 2], pch = c(16, 19), col = dataset$Species, xlab = "Petal length", ylab = "Petal width")
+legend(3, 2.2, legend = c("versicolor", "virginica"), col = c(2, 3), pch = c(16, 19))
+
+
+x <- dataset[, 1:2]
+y <- dataset[, 3]
+
+x <- normalizeData(x, type = "0_1")
+
+classes <- as.numeric(y)
+classes_bin <- mapvalues(classes, from = c(2, 3), to = c(0, 1))
+print((classes_bin))
+
+# usar validação cruzada k-fold com 5 pastas
+k <- 5
+folds <- cut(seq(1, nrow(dataset)), breaks = k, labels = FALSE)
+results <- data.frame()
+
+for (i in 1:k) {
+  # divide os dados em conjunto de treinamento e validação
+  train_index <- which(folds != i)
+  test_index <- which(folds == i)
+  x_train <- x[train_index,]
+  y_train <- classes_bin[train_index]
+  x_test <- x[test_index,]
+  y_test <- classes_bin[test_index]
+  
+  # treina o modelo
+  model <- mlp(x_train, y_train,
+               size = c(2, 3),
+               learnFuncParams = c(0.9),
+               maxit = 100,
+               learnFunc = "Std_Backpropagation",
+               hiddenActFunc = "Act_Logistic",
+               inputsTest = x_test,
+               targetsTest = y_test,
+               linOut = FALSE
+  )
+  
+  # faz previsões no conjunto de teste
+  predictions <- predict(model, as.data.frame(x_test))
+  
+  # avalia o modelo usando matriz de confusão
+  cm <- confusionMatrix(y_test, predictions > 0.4)
+  
+  # salva os resultados
+  results <- rbind(results, data.frame(Accuracy = cm$overall["Accuracy"],
+                                        Precision_versicolor = cm$table[1,1]/sum(cm$table[,1]),
+                                        Recall_versicolor = cm$table[1,1]/sum(cm$table[1,]),
+                                        Precision_virginica = cm$table[2,2]/sum(cm$table[,2]),
+                                        Recall_virginica = cm$table[2,2]/sum(cm$table[2,])
+                                        )
+                   )
+}
+
+# exibe os resultados finais
+print(results)
+```
