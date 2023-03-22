@@ -3,6 +3,7 @@ title: "Trabalho da Aula 5"
 author: "AfonsoBrandao"
 date: "2023-03-21"
 output:
+  pdf_document: default
   html_document:
     df_print: paged
 ---
@@ -11,151 +12,218 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## MLP Contínuo
-
-Nesta versão, carregamos a base de dados iris usando a função data e, em seguida, normalizamos os dados usando a função normalizeData. Em seguida, usamos a função splitForCrossValidation para dividir os dados em k folds. Em seguida, loopamos através de cada fold, ajustamos o modelo com o conjunto de treinamento e fazemos previsões nos dados de teste. Armazenamos os resultados em uma matriz e calculamos a média dos resultados. Finalmente, imprimimos os resultados médios.
-
-```{r continuo}
-# Carregar pacote
-library(RSNNS)
-
-# Carregar base de dados Iris
-data(iris)
-
-# Separar os dados em input (X) e output (Y)
-X <- iris[,1:4]
-Y <- iris[,5]
-
-# Normalizar os dados
-X <- normalizeData(X, type = "0_1")
-
-# Combinar os dados em um único objeto
-data <- cbind(X, Y)
-colnames(data) <- c("Sepal.Length", "Sepal.Width", "Petal.Length", "Petal.Width", "Species")
-
-# Definir o número de folds
-k <- 5
-
-# Criar vetor de índices aleatórios
-index <- sample(1:k, nrow(data), replace = TRUE)
-
-# Vetores para armazenar as predições e valores reais
-predictions_train <- vector()
-predictions_test <- vector()
-targets_train <- vector()
-targets_test <- vector()
-
-# Loop para separar os dados em k grupos
-for(i in 1:k){
-  
-  # Selecionar os índices para o grupo atual
-  index_train <- index != i
-  index_test <- index == i
-  
-  # Separar os dados de treinamento e teste
-  train_data <- data[index_train, ]
-  test_data <- data[index_test, ]
-  
-  # Separar os dados de input e output
-  x_train <- train_data[, 1:4]
-  y_train <- train_data[, 5]
-  x_test <- test_data[, 1:4]
-  y_test <- test_data[, 5]
-  
-  # Treinar MLP nos dados de treinamento
-  model <- mlp(x_train, y_train,
-               size = c(2, 3),
-               learnFuncParams = c(0.9),
-               maxit = 100,
-               learnFunc = "Std_Backpropagation",
-               hiddenActFunc = "Act_Logistic",
-               inputsTest = x_test,
-               targetsTest = y_test,
-               linOut = TRUE
-  )
-  
-  # Fazer as predições nos dados de treinamento e teste
-  predictions_train_fold <- predict(model, as.data.frame(x_train))
-  predictions_test_fold <- predict(model, as.data.frame(x_test))
-  
-  # Armazenar as predições e valores reais para o fold atual
-  predictions_train <- c(predictions_train, predictions_train_fold)
-  predictions_test <- c(predictions_test, predictions_test_fold)
-  targets_train <- c(targets_train, y_train)
-  targets_test <- c(targets_test, y_test)
-  
-  # Plotar o erro iterativo para o fold atual
-  plotIterativeError(model, main = paste("Fold", i))
-}
-```
-
-## MLP Discreto
-
-Neste código, o conjunto de dados Iris é carregado e pré-processado da mesma forma que no código anterior. A validação cruzada k-fold com 5 pastas é realizada e os resultados são salvos em um dataframe que contém a acurácia, precisão e recall para cada espécie:
+# Treinamento com kFold == 5 utilizando o código fornecido em sala de aula
 
 ```{r}
-# install.packages("RSNNS")
-library("RSNNS")
-library("plyr")
+# Carregando bibliotecas
+library(cvTools)
+library(RSNNS)
 
-dataset <- iris[which(iris$Species != "setosa"), ][1:2 - 3]
-head(dataset)
-
-plot(dataset[, 1], dataset[, 2], pch = c(16, 19), col = dataset$Species, xlab = "Petal length", ylab = "Petal width")
-legend(3, 2.2, legend = c("versicolor", "virginica"), col = c(2, 3), pch = c(16, 19))
-
-
-x <- dataset[, 1:2]
-y <- dataset[, 3]
-
-x <- normalizeData(x, type = "0_1")
-
-classes <- as.numeric(y)
-classes_bin <- mapvalues(classes, from = c(2, 3), to = c(0, 1))
-print((classes_bin))
-
-# usar validação cruzada k-fold com 5 pastas
-k <- 5
-folds <- cut(seq(1, nrow(dataset)), breaks = k, labels = FALSE)
-results <- data.frame()
-
-for (i in 1:k) {
-  # divide os dados em conjunto de treinamento e validação
-  train_index <- which(folds != i)
-  test_index <- which(folds == i)
-  x_train <- x[train_index,]
-  y_train <- classes_bin[train_index]
-  x_test <- x[test_index,]
-  y_test <- classes_bin[test_index]
-  
-  # treina o modelo
-  model <- mlp(x_train, y_train,
-               size = c(2, 3),
-               learnFuncParams = c(0.9),
-               maxit = 100,
-               learnFunc = "Std_Backpropagation",
-               hiddenActFunc = "Act_Logistic",
-               inputsTest = x_test,
-               targetsTest = y_test,
-               linOut = FALSE
-  )
-  
-  # faz previsões no conjunto de teste
-  predictions <- predict(model, as.data.frame(x_test))
-  
-  # avalia o modelo usando matriz de confusão
-  cm <- confusionMatrix(y_test, predictions > 0.4)
-  
-  # salva os resultados
-  results <- rbind(results, data.frame(Accuracy = cm$overall["Accuracy"],
-                                        Precision_versicolor = cm$table[1,1]/sum(cm$table[,1]),
-                                        Recall_versicolor = cm$table[1,1]/sum(cm$table[1,]),
-                                        Precision_virginica = cm$table[2,2]/sum(cm$table[,2]),
-                                        Recall_virginica = cm$table[2,2]/sum(cm$table[2,])
-                                        )
-                   )
+# Função para calcular a acurácia
+calc_acuracia <- function(y_desejado, y_estimado) {
+  matriz_confusao <- table(y_desejado, y_estimado)
+  acuracia <- sum(diag(matriz_confusao)) / length(y_desejado)
+  return(acuracia * 100)
 }
 
-# exibe os resultados finais
-print(results)
+# Configurando a validação cruzada
+db_iris <- iris
+n <- dim(db_iris)[1]
+K <- 5
+pastas <- cvFolds(n, K, type = "random")
+
+acuracias <- numeric(K)
+
+for (pasta in 1:K) {
+  i_treino <- which(pastas$which != pasta)
+  i_teste <- which(pastas$which == pasta)
+  
+  # Preparando os dados de treino e teste
+  X_treino <- db_iris[i_treino, -5]
+  X_teste <- db_iris[i_teste, -5]
+  classes_bin_treino <- decodeClassLabels(db_iris$Species[i_treino])
+  classes_bin_teste <- decodeClassLabels(db_iris$Species[i_teste])
+  
+  # Treinando o modelo
+  model <- mlp(X_treino, classes_bin_treino, size = c(2, 3), learnFuncParams = c(0.9),
+               maxit = 100, learnFunc = "Std_Backpropagation",
+               hiddenActFunc = "Act_Logistic", inputsTest = X_teste,
+               targetsTest = classes_bin_teste, linOut = FALSE)
+  
+  # Fazendo a previsão
+  y_estimado <- predict(model, X_teste)
+  y_estimado <- matrix(apply(y_estimado, 1, which.max), ncol = 1)
+  colnames(y_estimado) <- "Estimado"
+  y_estimado <- colnames(classes_bin_treino)[y_estimado]
+  
+  # Calculando a acurácia
+  acuracias[pasta] <- calc_acuracia(db_iris$Species[i_teste], y_estimado)
+  
+  # Plotando o gráfico de erro
+  plotIterativeError(model, main = paste("Erro Iterativo - Fold", pasta))
+}
+
+# Acurácia média
+acuracia_media <- mean(acuracias)
+print(acuracia_media)
+```
+
+--------------------------------------------------------------------------------
+# Testes com outras bibliotecas e abordagens
+## Treinamento com kFold == 5 utilizando a biblioteca nnet
+
+```{r}
+# Instalação da biblioteca cross-validation
+# install.packages("cvTools")
+library(cvTools)
+library(nnet)
+
+# Função para calcular a acurácia
+calcular_acuracia <- function(valores_reais, valores_preditos) {
+  return(mean(valores_reais == valores_preditos))
+}
+
+# Exemplo para a base iris
+db_iris <- iris
+n <- dim(db_iris)[1]
+K <- 5
+pastas <- cvFolds(n, K, type = "random")
+
+# Inicializando variáveis para armazenar as acurácias
+acuracia_kfold <- numeric(K)
+acuracia_mlp <- numeric(K)
+
+for (pasta in 1:K) {
+  # Separando os índices para treino e teste
+  i_treino <- which(pastas$which != pasta)
+  i_teste <- which(pastas$which == pasta)
+  
+  # Criando os conjuntos de treino e teste
+  db_treino <- db_iris[i_treino, ]
+  db_teste <- db_iris[i_teste, ]
+  
+  # Treinando o modelo de regressão logística
+  modelo_logistico <- multinom(Species ~ ., data = db_treino)
+  
+  # Treinando o modelo MLP
+  modelo_mlp <- nnet(Species ~ ., data = db_treino, size = 10, MaxNWts = 1000, maxit = 200, trace = FALSE)
+  
+  # Realizando as predições com os modelos treinados
+  predicoes_logistico <- predict(modelo_logistico, newdata = db_teste)
+  predicoes_mlp <- predict(modelo_mlp, newdata = db_teste, type = "class")
+  
+  # Calculando a acurácia dos modelos
+  acuracia_kfold[pasta] <- calcular_acuracia(db_teste$Species, predicoes_logistico)
+  acuracia_mlp[pasta] <- calcular_acuracia(db_teste$Species, predicoes_mlp)
+}
+
+# Calculando a acurácia média dos modelos
+acuracia_media_kfold <- mean(acuracia_kfold)
+acuracia_media_mlp <- mean(acuracia_mlp)
+
+cat("Acurácia média do modelo de regressão logística com K-fold cross-validation:", acuracia_media_kfold, "\n")
+cat("Acurácia média do modelo MLP:", acuracia_media_mlp, "\n")
+
+# Medida de Desempenho
+y_estimado <- c(1, 1, 1, 2, 2, 2, 2, 3, 3, 3)
+y_desejado <- c(1, 1, 1, 1, 2, 2, 2, 1, 2, 3)
+
+matriz_confusao <- table(y_desejado, y_estimado)
+
+acuracia <- sum(diag(matriz_confusao)) / length(y_desejado)
+print(acuracia * 100)
+
+# Instalar a biblioteca RSNNS
+# install.packages("RSNNS")
+
+
+# Curva ROC
+y_desejado <- c(0, 0, 0, 0, 1, 1, 1, 1, 1)
+y_estimado <- c(0, 0, 0, 1, 1, 0, 1, 1, 1)
+
+# Converter as classes para probabilidades
+y_estimado_prob <- ifelse(y_estimado == 1, 1, 0)
+
+# Instalar a biblioteca pROC
+# install.packages("pROC")
+library("pROC")
+
+# Criar a curva ROC
+roc_obj <- roc(y_desejado, y_estimado_prob)
+
+# Plotar a curva ROC
+plot(roc_obj, main = "Curva ROC")
+```
+
+## Treinamento com kFold == 5 e os Plots das redes neurais com neuralnet
+
+```{r}
+# Carregando as bibliotecas necessárias
+library(neuralnet)
+library(mltools)
+library(data.table)
+library(caret)
+library(pROC)
+
+# Carregando o dataset iris e normalizando os dados das colunas numéricas
+iris2 = scale(iris[,1:4])
+iris2 = as.data.frame(iris2)
+iris2$Species = iris$Species
+
+# Definindo a semente aleatória
+set.seed(1234)
+
+# Definindo o número de folds e criando a lista de folds
+k <- 5
+folds <- createFolds(iris2$Species, k = k)
+
+# Inicializando os vetores de acurácia e de curvas ROC
+accuracy <- vector(mode = "numeric", length = k)
+roc_list <- list()
+
+# Loop principal que realiza o processo de treinamento e teste para cada fold
+for(i in 1:k) {
+  # Dividindo o dataset em conjunto de treinamento e teste
+  iristreino <- iris2[folds[[i]], ]
+  iristeste <- iris2[-folds[[i]], ]
+  
+  # Transformando a variável Species em one-hot encoding para utilização na rede neural
+  iristreino <- cbind(iristreino[,1:4], one_hot(as.data.table(iristreino[,5])))
+  
+  # Treinando a rede neural com a função neuralnet, com duas camadas ocultas
+  modelo <- neuralnet(V1_setosa + V1_versicolor + V1_virginica ~ Sepal.Length + Sepal.Width + Petal.Length + Petal.Width, iristreino, hidden=c(5,4))
+  
+  # Plotando a rede neural treinada
+  print(modelo)
+  
+  # Testando a rede neural no conjunto de teste e obtendo as predições
+  teste <- compute(modelo, iristeste[,1:4])
+  resultado <- as.data.frame(teste$net.result)
+  
+  # Renomeando as colunas das predições para as espécies de iris
+  names(resultado)[1] <- 'setosa'
+  names(resultado)[2] <- 'versicolor'
+  names(resultado)[3] <- 'virginica'
+  
+  # Atribuindo a espécie com maior probabilidade como a predição final
+  resultado$class <- colnames(resultado[,1:3])[max.col(resultado[,1:3], ties.method = 'first')]
+  
+  # Criando a tabela de confusão e imprimindo no console
+  confusao <- table(resultado$class, iristeste$Species)
+  print(confusao)
+  
+  # Calculando a acurácia do modelo para o fold atual e adicionando à lista de acurácias
+  accuracy[i] <- sum(diag(confusao) * 100 / sum(confusao))
+}
+
+# Calculando a acurácia média do modelo em todos os folds
+mean(accuracy)
+
+# Definindo a disposição dos plots em uma janela gráfica
+par(mfrow=c(2,2))
+
+# Plotando todas as redes neurais treinadas em uma única janela gráfica
+for(i in 1:length(modelo$weights)) {
+  plot(modelo, rep = "best", show.weights = i)
+}
 ```

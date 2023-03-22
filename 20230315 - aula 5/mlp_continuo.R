@@ -4,6 +4,8 @@ library("RSNNS")
 # bd <- read.table("C:\\Users\\leusto\\Google Drive\\03 - Codigos R - sobras do livro\\exemplo_regressao.csv",header=TRUE,sep=";")
 # bd
 
+bd <- data(iris)
+
 x <- seq(1, 100)
 y <- log(x)
 plot(x, y, type = "l")

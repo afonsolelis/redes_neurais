@@ -82,5 +82,5 @@ plotRegressionError(data$targetsTest, predictions)
 
 
 
-# confusionMatrix(data$targetsTrain,predictions)
-# confusionMatrix(data$targetsTest,predictions)
+confusionMatrix(data$targetsTrain, predictions)
+confusionMatrix(data$targetsTest, predictions)
