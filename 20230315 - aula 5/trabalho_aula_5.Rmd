@@ -15,6 +15,55 @@ knitr::opts_chunk$set(echo = TRUE)
 # Treinamento com kFold == 5 utilizando o código fornecido em sala de aula
 
 ```{r}
+# Treinamento com método split
+
+# Carregando bibliotecas
+library(RSNNS)
+
+# Função para calcular a acurácia
+calc_acuracia <- function(y_desejado, y_estimado) {
+  matriz_confusao <- table(y_desejado, y_estimado)
+  acuracia <- sum(diag(matriz_confusao)) / length(y_desejado)
+  return(acuracia * 100)
+}
+
+# Dividindo os dados em treino e teste
+set.seed(123) # definindo uma semente para reproduzir os mesmos resultados
+indices_treino <- sample(1:nrow(iris), round(0.7*nrow(iris)), replace = FALSE)
+dados_treino <- iris[indices_treino, ]
+dados_teste <- iris[-indices_treino, ]
+
+# Preparando os dados de treino e teste
+X_treino <- dados_treino[, -5]
+X_teste <- dados_teste[, -5]
+classes_bin_treino <- decodeClassLabels(dados_treino$Species)
+classes_bin_teste <- decodeClassLabels(dados_teste$Species)
+
+# Treinando o modelo
+model <- mlp(X_treino, classes_bin_treino, size = c(2, 3), learnFuncParams = c(0.9),
+             maxit = 100, learnFunc = "Std_Backpropagation",
+             hiddenActFunc = "Act_Logistic", inputsTest = X_teste,
+             targetsTest = classes_bin_teste, linOut = FALSE)
+plotIterativeError(model)
+
+# Fazendo a previsão
+y_estimado <- predict(model, X_teste)
+y_estimado <- matrix(apply(y_estimado, 1, which.max), ncol = 1)
+colnames(y_estimado) <- "Estimado"
+y_estimado <- colnames(classes_bin_treino)[y_estimado]
+
+# Calculando a acurácia
+acuracia <- calc_acuracia(dados_teste$Species, y_estimado)
+
+# Imprimindo a acurácia
+print(acuracia)
+
+# Plotando o gráfico de erro
+plotIterativeError(model, main = "Erro Iterativo")
+```
+
+## Separação dos dados em 5 pastas para cross validation
+```{r}
 # Carregando bibliotecas
 library(cvTools)
 library(RSNNS)
@@ -67,6 +116,8 @@ for (pasta in 1:K) {
 acuracia_media <- mean(acuracias)
 print(acuracia_media)
 ```
+
+
 
 --------------------------------------------------------------------------------
 # Testes com outras bibliotecas e abordagens
