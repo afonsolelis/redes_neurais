@@ -4,7 +4,7 @@ Deep Learning
 ---
 
 ```{r}
-#install.packages("h2o")
+install.packages("h2o")
 library(h2o)
 ```
 Importamos o arquivo para visualização
